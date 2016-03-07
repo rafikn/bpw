@@ -1,5 +1,5 @@
 CC=gcc
 CFLAGS=-I.
 
-bpm: IO.o bpm.o
-	gcc -o bpm IO.o bpm.o
+bpm: bpm_io.o bpm.o
+	gcc -o bpm bpm_io.o bpm.o

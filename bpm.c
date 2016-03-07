@@ -4,55 +4,110 @@
 #include <limits.h>
 
 
-#include "IO.h"
+#include "bpm_io.h"
 
-int main() {
+void write(uint64_t width, uint64_t gates, uint64_t inputs, uint64_t outputs) {
+    FILE * fp;
+    fp = fopen("test.bpm", "wb");
 
-  FILE * fp;
-  uint64_t width_w, gates_w, inputs_w, outputs_W;
-  uint64_t width_r, gates_r, inputs_r, outputs_r;
+    write_header(fp);
+    write_uint64_t(fp, width);
+    write_uint64_t(fp, gates);
+    write_uint64_t(fp, inputs);
+    write_uint64_t(fp, outputs);
 
-  fp = fopen("test.bpm", "wb");
+    for (int i = 0; i < gates; i++) {
+      char gate = -1;
 
-  width_w = (uint64_t) 4;
-  gates_w = (uint64_t) 8;
-  inputs_w = (uint64_t) 16;
-  outputs_W = (uint64_t) 8;
+      while (gate == -1) gate = generate_gate();
 
-  write_header(fp);
-  write_uint64_t(fp, width_w);
-  write_uint64_t(fp, gates_w);
-  write_uint64_t(fp, inputs_w);
-  write_uint64_t(fp, outputs_W);
+      putc(gate, fp);
 
+      printf("generated gate = %02x\n", gate);
 
+      uint64_t a = 0;
+      uint64_t b = 0;
+      uint64_t c = 0;
+      switch (gate_inputs(gate)) {
+        case 1:
+          // generate 1 random input
+          a = generate_uint64_t(inputs);
+          write_uint64_t(fp, a);
+          printf("1 input %llu\n", a);
+          break;
+        case 2:
+          // generate random input * 2
+          a = generate_uint64_t(inputs);
+          b = generate_uint64_t(inputs);
+          write_uint64_t(fp, a);
+          write_uint64_t(fp, b);
+          printf("2 inputs %llu, %llu \n", a, b );
+          break;
+        case 3:
+          // generate random input * 3
+          a = generate_uint64_t(inputs);
+          b = generate_uint64_t(inputs);
+          c = generate_uint64_t(inputs);
+          write_uint64_t(fp, a);
+          write_uint64_t(fp, b);
+          write_uint64_t(fp, c);
+          printf("3 inputs %llu, %llu, %llu \n", a,b,c);
+      }
 
-  fclose(fp);
+    }
+    fclose(fp);
+}
+
+void read() {
+  uint64_t width, gates, inputs, outputs;
 
   char * buffer = buffer_file("test.bpm");
 
-  printf("%c", *buffer++);
-  printf("%c", *buffer++);
-  printf("%c", *buffer++);
-  printf("%d\n", *buffer++);
+  /* read the first 4 bytes*/
+  buffer = read_header(buffer);
 
-  width_r = read_uint64_t(buffer);
-  for (int i =0; i < 8;i++) buffer++;
+  /* read the next 8 bytes*/
+  width = read_uint64_t(buffer);
+  buffer = move_8_bytes(buffer);
 
-  gates_r = read_uint64_t(buffer);
-  for (int i =0; i < 8;i++) buffer++;
+  /* read the next 8 bytes*/
+  gates = read_uint64_t(buffer);
+  buffer = move_8_bytes(buffer);
 
-  inputs_r = read_uint64_t(buffer);
-  for (int i =0; i < 8;i++) buffer++;
+  /* read the next 8 bytes*/
+  inputs = read_uint64_t(buffer);
+  buffer = move_8_bytes(buffer);
 
-  outputs_r = read_uint64_t(buffer);
-  for (int i =0; i < 8;i++) buffer++;
+  /* read the next 8 bytes*/
+  outputs = read_uint64_t(buffer);
+  buffer = move_8_bytes(buffer);
 
 
-  printf("width=%llu\n", width_r);
-  printf("gates=%llu\n", gates_r);
-  printf("inputs_r=%llu\n", inputs_r);
-  printf("outputs_r=%llu\n", gates_r);
+  printf("width=%llu\n", width);
+  printf("gates=%llu\n", gates);
+  printf("inputs_r=%llu\n", inputs);
+  printf("outputs_r=%llu\n", outputs);
+
+
+  for (int i = 0; i < gates; i++) {
+      char gate = read_char(buffer);
+      printf("gate_%d type=%02x\n", i, gate);
+      buffer++;
+
+      for (int j = 0; j < gate_inputs(gate); j++) {
+        printf("gate_%d input_%d=%llu\n", i, j, read_uint64_t(buffer));
+        buffer = move_8_bytes(buffer);
+      }
+
+  }
+}
+
+int main() {
+
+
+  write(4, 16, 10, 4);
+  read();
+
 
   return 0;
 }
