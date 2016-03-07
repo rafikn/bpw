@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <limits.h>
-
+#include <time.h>
 
 #include "bpm_io.h"
 
@@ -103,11 +103,10 @@ void read() {
 }
 
 int main() {
-
+  srand(time(NULL));
 
   write(4, 16, 10, 4);
   read();
-
 
   return 0;
 }
