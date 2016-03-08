@@ -6,6 +6,20 @@
 
 #include "bpm_io.h"
 
+typedef struct Gate {
+  char type;
+  uint64_t * inputs;
+  uint64_t output;
+} Gate;
+
+typedef struct Level {
+  Gate * gates;
+  char * buffer;
+  struct Level * next;
+} Level;
+
+
+
 void write(uint64_t width, uint64_t gates, uint64_t inputs, uint64_t outputs) {
     FILE * fp;
     fp = fopen("test.bpm", "wb");
@@ -58,6 +72,45 @@ void write(uint64_t width, uint64_t gates, uint64_t inputs, uint64_t outputs) {
     fclose(fp);
 }
 
+/**
+ * Initialise a level of width w gates
+ */
+Level * init_level(uint64_t w) {
+  Level * root = (Level *) malloc(sizeof(Level));
+  root->gates = (Gate *) calloc(w, sizeof(Gate));
+  root->next = 0;
+  return root;
+}
+
+/**
+ * Read w gates from buffer
+ */
+Level * read_level(uint64_t w, char * buffer) {
+  Level * level = init_level(w);
+  level->gates = (Gate *) calloc(w, sizeof(Gate));
+  for (int i = 0; i< w; i++) {
+    Gate * g_ptr = (Gate *) malloc(sizeof(Gate));
+    // read gate types
+    g_ptr->type = read_char(buffer);
+    buffer++;
+    // read inputs
+    g_ptr->inputs = (uint64_t *) calloc(gate_inputs(g_ptr->type), sizeof(uint64_t));
+    for (int j = 0; j < gate_inputs(g_ptr->type); j++) {
+      g_ptr->inputs[j] = read_uint64_t(buffer);
+      buffer += 8;
+    }
+
+    level->gates[i] = *g_ptr;
+    free(g_ptr);
+  }
+
+  level->buffer = buffer;
+  return level;
+}
+
+/**
+ * Read a bpm file
+ */
 void read() {
   uint64_t width, gates, inputs, outputs;
 
@@ -65,23 +118,18 @@ void read() {
 
   /* read the first 4 bytes*/
   buffer = read_header(buffer);
-
   /* read the next 8 bytes*/
   width = read_uint64_t(buffer);
-  buffer = move_8_bytes(buffer);
-
+  buffer += 8;
   /* read the next 8 bytes*/
   gates = read_uint64_t(buffer);
-  buffer = move_8_bytes(buffer);
-
+  buffer += 8;
   /* read the next 8 bytes*/
   inputs = read_uint64_t(buffer);
-  buffer = move_8_bytes(buffer);
-
+  buffer += 8;
   /* read the next 8 bytes*/
   outputs = read_uint64_t(buffer);
-  buffer = move_8_bytes(buffer);
-
+  buffer += 8;
 
   printf("width=%llu\n", width);
   printf("gates=%llu\n", gates);
@@ -89,16 +137,25 @@ void read() {
   printf("outputs_r=%llu\n", outputs);
 
 
-  for (int i = 0; i < gates; i++) {
-      char gate = read_char(buffer);
-      printf("gate_%d type=%02x\n", i, gate);
-      buffer++;
+  int levels = gates / width;
+  // initialize first level gate array
+  Level * root = read_level(width, buffer);
+  levels--;
 
-      for (int j = 0; j < gate_inputs(gate); j++) {
-        printf("gate_%d input_%d=%llu\n", i, j, read_uint64_t(buffer));
-        buffer = move_8_bytes(buffer);
-      }
+  Level * level_pre = root;
+  while (levels > 0) {
+    Level * level_current = read_level(width, level_pre->buffer);
+    level_pre->next = level_current;
+    level_pre = level_current;
+    levels--;
+  }
 
+  Level * p = root;
+  while (p != 0) {
+    for (int i = 0; i < width; i++) {
+      printf("loaded gate %02x\n", p->gates[i].type);
+    }
+    p = p->next;
   }
 }
 

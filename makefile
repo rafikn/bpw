@@ -1,5 +1,7 @@
-CC=gcc
-CFLAGS=-I.
+PROG = bpm
+OBJS = bpm.o bpm_io.o 
+CC = gcc
+CFLAGS = -Wall -ansi -pedantic -g -std=c99
 
-bpm: bpm_io.o bpm.o
-	gcc -o bpm bpm_io.o bpm.o
+$(PROG): $(OBJS)
+	$(CC) $(CFLAGS) -o $@ $(OBJS)
