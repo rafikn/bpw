@@ -5,15 +5,17 @@
 void write_header(FILE * fp);
 void write_uint64_t(FILE * fp, uint64_t val);
 
-char * buffer_file(char * path);
-char * move_8_bytes(char * buffer);
+Byte * buffer_file(Byte * path);
+Byte * move_8_bytes(Byte * buffer);
 
-char * read_header(char * buffer);
+Byte * read_header(Byte * buffer);
 
-char read_char(char * buffer);
-uint64_t read_uint64_t(char * buffer);
+Byte read_byte(Byte * buffer);
+uint64_t read_uint64_t(Byte * buffer);
 
-char generate_gate();
-char gate_inputs(char gate);
-char * gate_name(char gate);
+Byte generate_gate();
+Byte gate_inputs(Byte gate);
+Byte * gate_name(Byte gate);
 uint64_t generate_uint64_t(uint64_t limit);
+
+Bit eval(Bit * inputs, Gate gate);

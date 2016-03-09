@@ -3,21 +3,10 @@
 #include <stdint.h>
 #include <limits.h>
 #include <time.h>
+#include <string.h>
 
+#include "bpm_struct.h"
 #include "bpm_io.h"
-
-typedef struct Gate {
-  char type;
-  uint64_t * inputs;
-  uint64_t output;
-} Gate;
-
-typedef struct Level {
-  Gate * gates;
-  char * buffer;
-  struct Level * next;
-} Level;
-
 
 
 void write(uint64_t width, uint64_t gates, uint64_t inputs, uint64_t outputs) {
@@ -31,13 +20,11 @@ void write(uint64_t width, uint64_t gates, uint64_t inputs, uint64_t outputs) {
     write_uint64_t(fp, outputs);
 
     for (int i = 0; i < gates; i++) {
-      char gate = -1;
-
-      while (gate == -1) gate = generate_gate();
+      Byte gate = generate_gate();
 
       putc(gate, fp);
 
-      printf("generated gate = %02x\n", gate);
+      //printf("generated gate = %02x\n", gate);
 
       uint64_t a = 0;
       uint64_t b = 0;
@@ -47,7 +34,7 @@ void write(uint64_t width, uint64_t gates, uint64_t inputs, uint64_t outputs) {
           // generate 1 random input
           a = generate_uint64_t(inputs);
           write_uint64_t(fp, a);
-          printf("1 input %llu\n", a);
+          //printf("1 input %llu\n", a);
           break;
         case 2:
           // generate random input * 2
@@ -55,7 +42,7 @@ void write(uint64_t width, uint64_t gates, uint64_t inputs, uint64_t outputs) {
           b = generate_uint64_t(inputs);
           write_uint64_t(fp, a);
           write_uint64_t(fp, b);
-          printf("2 inputs %llu, %llu \n", a, b );
+          //printf("2 inputs %llu, %llu \n", a, b );
           break;
         case 3:
           // generate random input * 3
@@ -65,11 +52,21 @@ void write(uint64_t width, uint64_t gates, uint64_t inputs, uint64_t outputs) {
           write_uint64_t(fp, a);
           write_uint64_t(fp, b);
           write_uint64_t(fp, c);
-          printf("3 inputs %llu, %llu, %llu \n", a,b,c);
+          //printf("3 inputs %llu, %llu, %llu \n", a,b,c);
+          break;
       }
 
     }
     fclose(fp);
+}
+
+Bit * init_input(uint64_t width) {
+  Bit * inputs = (Bit * ) calloc(width, sizeof(Bit));
+  for (int i = 0; i< width; i++) {
+    inputs[i] = (Bit)rand()&1;
+  }
+  return inputs;
+
 }
 
 /**
@@ -85,13 +82,13 @@ Level * init_level(uint64_t w) {
 /**
  * Read w gates from buffer
  */
-Level * read_level(uint64_t w, char * buffer) {
+Level * read_level(uint64_t w, Byte * buffer) {
   Level * level = init_level(w);
   level->gates = (Gate *) calloc(w, sizeof(Gate));
   for (int i = 0; i< w; i++) {
     Gate * g_ptr = (Gate *) malloc(sizeof(Gate));
     // read gate types
-    g_ptr->type = read_char(buffer);
+    g_ptr->type = read_byte(buffer);
     buffer++;
     // read inputs
     g_ptr->inputs = (uint64_t *) calloc(gate_inputs(g_ptr->type), sizeof(uint64_t));
@@ -114,7 +111,7 @@ Level * read_level(uint64_t w, char * buffer) {
 void read() {
   uint64_t width, gates, inputs, outputs;
 
-  char * buffer = buffer_file("test.bpm");
+  Byte * buffer = buffer_file("test.bpm");
 
   /* read the first 4 bytes*/
   buffer = read_header(buffer);
@@ -151,18 +148,33 @@ void read() {
   }
 
   Level * p = root;
+  int l = 0;
+
+
+  Bit * in_arr = init_input(width);
+  Bit * out_arr = (Bit * ) calloc(width, sizeof(Bit));
+
   while (p != 0) {
+
+    printf("Level %d\n", l++);
     for (int i = 0; i < width; i++) {
-      printf("loaded gate %02x\n", p->gates[i].type);
+      //printf("loaded gate %02x\n", p->gates[i].type);
+
+      out_arr[i] = eval(in_arr, p->gates[i]);
     }
+
+    memcpy(in_arr, out_arr, sizeof(out_arr));
     p = p->next;
   }
+
+  free(in_arr);
+  free(out_arr);
 }
 
 int main() {
   srand(time(NULL));
 
-  write(4, 16, 10, 4);
+  write(100000000, 5000000000, 10, 4);
   read();
 
   return 0;
