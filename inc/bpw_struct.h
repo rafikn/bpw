@@ -2,11 +2,12 @@
 #include <stdint.h>
 
 typedef unsigned char Byte;
+typedef uint64_t  Byte8;
 
 typedef struct Gate {
   Byte type;
-  uint64_t * inputs;
-  uint64_t output;
+  Byte8 * inputs;
+  Byte8 output;
 } Gate;
 
 typedef struct Level {
