@@ -20,7 +20,7 @@ void write_header(FILE * fp) {
 }
 
 /**
- * Write 8 bytes tp bwp FILE
+ * Write 8 bytes tp BPW FILE
  * Use 0 padding
  */
 void write_bytes(FILE * fp, Byte8 val) {
@@ -93,7 +93,7 @@ Byte generate_gate() {
 }
 
 /**
- * Create a bwp FILE
+ * Create a BPW FILE
  */
 void write_file(char * filename, Byte8 width, Byte8 gates, Byte8 inputs, Byte8 outputs) {
     FILE * fp;
@@ -142,9 +142,9 @@ void write_file(char * filename, Byte8 width, Byte8 gates, Byte8 inputs, Byte8 o
 }
 
 /**
- * Load a bwp file in a buffer
+ * Load a BPW file in a buffer
  * While this would allow to process the file byte by byte,
- * it is not optimal for large bwp files
+ * it is not optimal for large BPW files
  */
 Byte * buffer_file(Byte * path) {
   FILE *fileptr;
@@ -164,7 +164,7 @@ Byte * buffer_file(Byte * path) {
 }
 
 /**
- * Print the first 4 bytes of a bwp file
+ * Print the first 4 bytes of a BPW file
  * Move the buffer to first gate
  */
 Byte * read_header(Byte * buffer) {
@@ -291,7 +291,7 @@ Level * read_level(Byte8 w, Byte * buffer) {
 }
 
 /**
- * Read a bwp file
+ * Read a BPW file
  */
 void read_file(char * filename) {
   Byte8 width, gates, inputs, outputs;
