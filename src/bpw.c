@@ -10,12 +10,13 @@
 #include "../inc/bpw_io.h"
 
 static const char * FILENAME = "files/test_%d.bwp";
+static const int TESTS = 13;
 
 
 void write_files() {
-  int width[11] = {5, 10, 50, 100, 500, 1000, 5000, 10000, 50000, 100000, 500000};
+  unsigned int width[13] = {5, 10, 50, 100, 500, 1000, 5000, 10000, 50000, 100000, 500000, 1000000, 5000000};
   int levels = 100;
-  for (int i = 0; i < 11; i++) {
+  for (int i = 0; i < TESTS; i++) {
     char filename[24];
     sprintf(filename, FILENAME, width[i]);
 
@@ -52,9 +53,9 @@ int main(int argc, char **argv) {
       }
 
     Byte8 width = strtoumax(argv[2], NULL, 10);
-    printf("Evaluating file with width \n",width);
+    printf("Evaluating file with width %d\n", width);
     exec(width);
-    printf("done");
+    printf("done\n\");
     return 0;
   }
 }

@@ -1,0 +1,135 @@
+Test result for w=1000000 (3 tries)
+
+CMD: perf stat -d -r 3 ./bin/bpw eval 1000000
+STDOUT:
+
+ Performance counter stats for './bin/bpw eval 1000000' (3 runs):
+
+      14935.400496      task-clock (msec)         #    0.416 CPUs utilized          
+            13,428      context-switches          #    0.895 K/sec                  
+               613      cpu-migrations            #    0.041 K/sec                  
+         1,866,639      page-faults               #    0.124 M/sec                  
+    60,038,129,059      cycles                    #    4.000 GHz                    
+    21,654,294,269      stalled-cycles-frontend   #   36.27% frontend cycles idle   
+   <not supported>      stalled-cycles-backend   
+   100,091,380,267      instructions              #    1.68  insns per cycle        
+                                                  #    0.21  stalled cycles per insn
+    17,276,875,663      branches                  # 1151.126 M/sec                  
+       275,230,999      branch-misses             #    1.59% of all branches        
+    29,882,189,248      L1-dcache-loads           # 1990.995 M/sec                  
+       600,332,937      L1-dcache-load-misses     #    2.01% of all L1-dcache hits  
+       355,063,337      LLC-loads                 #   23.657 M/sec                  
+   <not supported>      LLC-load-misses          
+
+      35.865549508 seconds time elapsed                                          ( +-  5.11% )
+
+
+
+
+Test result for w=100000 (3 tries)
+
+CMD: perf stat -d -r 3 ./bin/bpw eval 100000
+STDOUT:
+
+ Performance counter stats for './bin/bpw eval 100000' (3 runs):
+
+       1372.427209      task-clock (msec)         #    0.990 CPUs utilized          
+                38      context-switches          #    0.027 K/sec                  
+                 0      cpu-migrations            #    0.000 K/sec                  
+           186,805      page-faults               #    0.135 M/sec                  
+     5,796,714,141      cycles                    #    4.183 GHz                    
+     1,992,310,411      stalled-cycles-frontend   #   34.42% frontend cycles idle   
+   <not supported>      stalled-cycles-backend   
+     9,844,044,688      instructions              #    1.70  insns per cycle        
+                                                  #    0.20  stalled cycles per insn
+     1,696,791,942      branches                  # 1224.290 M/sec                  
+        26,849,711      branch-misses             #    1.58% of all branches        
+     2,944,158,019      L1-dcache-loads           # 2124.305 M/sec                  
+        54,985,982      L1-dcache-load-misses     #    1.87% of all L1-dcache hits  
+         9,660,574      LLC-loads                 #    6.970 M/sec                  
+   <not supported>      LLC-load-misses          
+
+       1.386809830 seconds time elapsed                                          ( +-  0.95% )
+
+
+
+
+Test result for w=100000 (3 tries)
+
+CMD: perf stat -d -r 3 ./bin/bpw eval 10000
+STDOUT:
+
+ Performance counter stats for './bin/bpw eval 10000' (3 runs):
+
+        138.714407      task-clock (msec)         #    0.611 CPUs utilized          
+                 1      context-switches          #    0.006 K/sec                  
+                 0      cpu-migrations            #    0.000 K/sec                  
+            18,859      page-faults               #    0.119 M/sec                  
+       585,877,805      cycles                    #    3.701 GHz                    
+       203,421,683      stalled-cycles-frontend   #   34.90% frontend cycles idle   
+   <not supported>      stalled-cycles-backend   
+       988,743,805      instructions              #    1.70  insns per cycle        
+                                                  #    0.20  stalled cycles per insn
+       170,667,608      branches                  # 1078.131 M/sec                  
+         2,701,936      branch-misses             #    1.58% of all branches        
+       295,662,917      L1-dcache-loads           # 1867.744 M/sec                  
+         3,744,368      L1-dcache-load-misses     #    1.26% of all L1-dcache hits  
+           880,571      LLC-loads                 #    5.563 M/sec                  
+   <not supported>      LLC-load-misses          
+
+       0.226916437 seconds time elapsed                                          ( +- 36.89% )
+
+
+
+Test result for w=10000 (3 tries)
+
+CMD: perf stat -d -r 3 ./bin/bpw eval 10000
+STDOUT:
+
+ Performance counter stats for './bin/bpw eval 1000' (3 runs):
+
+         21.311888      task-clock (msec)         #    0.492 CPUs utilized          
+                 0      context-switches          #    0.000 K/sec                  
+                 0      cpu-migrations            #    0.000 K/sec                  
+             2,505      page-faults               #    0.106 M/sec                  
+        60,433,974      cycles                    #    2.556 GHz                    
+        21,317,475      stalled-cycles-frontend   #   34.96% frontend cycles idle   
+   <not supported>      stalled-cycles-backend   
+       101,472,303      instructions              #    1.66  insns per cycle        
+                                                  #    0.21  stalled cycles per insn
+        17,529,186      branches                  #  741.304 M/sec                  
+           273,416      branch-misses             #    1.55% of all branches        
+        30,142,815      L1-dcache-loads           # 1274.731 M/sec                  
+           458,866      L1-dcache-load-misses     #    1.51% of all L1-dcache hits  
+            93,013      LLC-loads                 #    3.933 M/sec                  
+   <not supported>      LLC-load-misses          
+
+       0.043290696 seconds time elapsed                                          ( +- 48.17% )
+
+
+
+CPU INFO
+Architecture:          x86_64
+CPU op-mode(s):        32-bit, 64-bit
+Byte Order:            Little Endian
+CPU(s):                4
+On-line CPU(s) list:   0-3
+Thread(s) per core:    1
+Core(s) per socket:    4
+Socket(s):             1
+NUMA node(s):          1
+Vendor ID:             GenuineIntel
+CPU family:            6
+Model:                 58
+Model name:            Intel(R) Core(TM) i5-3570K CPU @ 3.40GHz
+Stepping:              9
+CPU MHz:               2099.898
+CPU max MHz:           4100.0000
+CPU min MHz:           1600.0000
+BogoMIPS:              7005.65
+Virtualization:        VT-x
+L1d cache:             32K
+L1i cache:             32K
+L2 cache:              256K
+L3 cache:              6144K
+NUMA node0 CPU(s):     0-3
