@@ -5,7 +5,7 @@ BIN_DIR = bin
 FILE_DIR = files
 
 OBJS = $(OBJ_DIR)/bpw.o  $(OBJ_DIR)/bpw_io.o
-CC = gcc
+CC = gcc -lm
 CFLAGS = -Wall -ansi -pedantic -g -std=c99
 
 

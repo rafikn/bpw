@@ -7,7 +7,6 @@ typedef uint64_t  Byte8;
 typedef struct Gate {
   Byte type;
   Byte8 * inputs;
-  Byte8 output;
 } Gate;
 
 typedef struct Level {
