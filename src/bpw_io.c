@@ -40,8 +40,15 @@ void write_bytes(FILE * fp, Byte8 val) {
  */
 Byte8 generate_bytes(Byte8 limit) {
   Byte8 num;
-  num = rand();
-  num = (num << 32) | rand();
+  if( RAND_MAX == 0x7FFFFFFF ) {
+    num = rand();
+    num = (num << 31) ^ rand(); // a 62-bit signed integer
+  } else {
+    assert( RAND_MAX == 0x3FFFFFFFFFFFFFFF );
+    num = rand(); // a 62-bit signed integer
+  }
+
+  if (num % limit > limit) printf("gen: %llu max: %llu\n", num, limit);
   return num % limit;
 }
 
@@ -218,6 +225,45 @@ Byte eval(Bit * inputs, Gate gate) {
   }
 }
 
+Byte eval_gate(Byte gateType, Bit input_1, Bit input_2, Bit input_3) {
+  switch (gateType) {
+    case 0x00: // not
+      return !input_1;
+    case 0x01: //and2
+      return input_1 & input_2;
+    case 0x02: //or2
+      return input_1 | input_2;
+    case 0x03: //xor2
+        return input_1 ^ input_2;
+    case 0x04: //nand2
+      return !(input_1 & input_2);
+    case 0x05: //nor2
+      return !(input_1 | input_2);
+    case 0x06: //xnor2
+      return !(input_1 ^ input_2);
+    case 0x07: //and3
+      return input_1 & input_2 & input_3;
+    case 0x08: //or3
+      return input_1 | input_2 | input_3;
+    case 0x09: //nand3
+      return !(input_1 & input_2 & input_3);
+    case 0x0a: //nor3
+      return !(input_1 | input_2 | input_3);
+    case 0x0b: //xor3
+      return input_1 ^ input_2 ^ input_3;
+    case 0x0c: //xnor3
+      return !(input_1 ^ input_2 ^ input_3);
+    case 0x0d: //mux3
+      if (input_1) return input_2; else return input_3;
+    case 0x0e: //copy
+    case 0x0f:
+      printf("undefined\n");
+      exit(0);
+      break;
+
+  }
+}
+
 /**
  * Read one byte (8-bit) value
  * NOTE: Buffer still needs to be moved one byte manually after read
@@ -251,6 +297,13 @@ Bit * init_input(Byte8 width) {
   }
   return inputs;
 
+}
+
+Bit * init_arr(Bit * in_arr, Byte8 width) {
+  for (int i = 0; i< width; i++) {
+    in_arr[i] = (Bit)rand()&1;
+  }
+  return in_arr;
 }
 
 /**
@@ -294,63 +347,150 @@ Level * read_level(Byte8 w, Byte * buffer) {
  * Read a BPW file
  */
 void read_file(char * filename) {
-  Byte8 width, gates, inputs, outputs;
-  Byte * buffer = buffer_file(filename);
+  Byte8 width, gates, inputs, outputs, levels;
+  FILE * pFile;
+  Byte * buffer, * ptr;
+  size_t result;
+  long lSize;
+  Byte gateType;
+  Byte8 input_1;
+  Byte8 input_2;
+  Byte8 input_3;
 
-  /* read the first 4 bytes*/
-  buffer = read_header(buffer);
-  /* read the next 8 bytes*/
-  width = read_bytes(buffer);
-  buffer += 8;
-  /* read the next 8 bytes*/
-  gates = read_bytes(buffer);
-  buffer += 8;
-  /* read the next 8 bytes*/
-  inputs = read_bytes(buffer);
-  buffer += 8;
-  /* read the next 8 bytes*/
-  outputs = read_bytes(buffer);
-  buffer += 8;
+  printf("Loading file %s\n", filename);
 
-  printf("Reading file %s : [", filename);
-  printf("width=%llu ", width);
-  printf("gates=%llu ", gates);
-  printf("inputs_r=%llu ", inputs);
-  printf("outputs_r=%llu]\n", outputs);
+  pFile = fopen (filename , "rb" );
+  // obtain file size:
+  fseek (pFile , 0 , SEEK_END);
+  lSize = ftell (pFile);
+  rewind (pFile);
 
+  // allocate memory to contain the whole file:
+  buffer = (Byte*) malloc (sizeof(Byte)*lSize);
+  if (buffer == NULL) {fputs ("Memory error",stderr); exit (2);}
 
-  int levels = gates / width;
-  // initialize first level gate array
-  Level * root = read_level(width, buffer);
-  levels--;
-
-  Level * level_pre = root;
-  while (levels > 0) {
-    Level * level_current = read_level(width, level_pre->buffer);
-    level_pre->next = level_current;
-    level_pre = level_current;
-    levels--;
-  }
-
-  Level * p = root;
-  int l = 0;
+  // copy the file into the buffer:
+  result = fread (buffer,1,lSize,pFile);
+  if (result != lSize) {fputs ("Reading error",stderr); exit (3);}
 
 
-  Bit * in_arr = init_input(width);
+  ptr = buffer;
+
+  printf("%c", *ptr++);
+  printf("%c", *ptr++);
+  printf("%c", *ptr++);
+  printf("%x\n", *ptr++);
+
+  width = read_bytes(ptr); ptr += 8;
+  gates = read_bytes(ptr); ptr += 8;
+  inputs = read_bytes(ptr); ptr += 8;
+  outputs = read_bytes(ptr); ptr += 8;
+  levels = gates/width;
+
+  printf("Gates: %llu\n", gates);
+  printf("Width: %llu\n", width);
+  printf("Levels: %llu\n", levels);
+
+
+
+  Bit * in_arr = (Bit * ) calloc(width, sizeof(Bit));
   Bit * out_arr = (Bit * ) calloc(width, sizeof(Bit));
+  for (int i = 0; i < levels; i++) {
 
-  while (p != 0) {
+      in_arr = out_arr;
+      if (!i) {
+        in_arr = init_arr(in_arr, width);
+      }
 
-    for (int i = 0; i < width; i++) {
-      //printf("loaded gate %02x\n", p->gates[i].type);
+      for (int j = 0; j < width; i++) {
+        /* read gate */
+        gateType = read_byte(ptr); ptr++;
+        switch (gate_inputs(gateType)) {
+          case 1:
+            input_1 = in_arr[read_byte(ptr)]; ptr+=8;
+            break;
+          case 2:
+            input_1 = in_arr[read_byte(ptr)]; ptr+=8;
+            input_2 = in_arr[read_byte(ptr)]; ptr+=8;
+            break;
+          case 3:
+            input_1 = in_arr[read_byte(ptr)]; ptr+=8;
+            input_2 = in_arr[read_byte(ptr)]; ptr+=8;
+            input_3 = in_arr[read_byte(ptr)]; ptr+=8;
+            break;
+        }
 
-      out_arr[i] = eval(in_arr, p->gates[i]);
+        //printf("level: %d gate: %x inputs: %d 1:%d 2:%d 3:%d \n", i, gateType, gate_inputs(gateType), input_1, input_2, input_3);
+        out_arr[j] = eval_gate(gateType, input_1, input_2, input_3);
     }
-
-    memcpy(in_arr, out_arr, sizeof(out_arr));
-    p = p->next;
   }
 
-  free(in_arr);
-  free(out_arr);
+
+
+
+  /* the whole file is now loaded in the memory buffer. */
+
+  // terminate
+  fclose (pFile);
+  free (buffer);
+
+
+  // Byte * buffer = buffer_file(filename);
+  //
+  // /* read the first 4 bytes*/
+  // buffer = read_header(buffer);
+  // /* read the next 8 bytes*/
+  // width = read_bytes(buffer);
+  // buffer += 8;
+  // /* read the next 8 bytes*/
+  // gates = read_bytes(buffer);
+  // buffer += 8;
+  // /* read the next 8 bytes*/
+  // inputs = read_bytes(buffer);
+  // buffer += 8;
+  // /* read the next 8 bytes*/
+  // outputs = read_bytes(buffer);
+  // buffer += 8;
+  //
+  // printf("Reading file %s : [", filename);
+  // printf("width=%llu ", width);
+  // printf("gates=%llu ", gates);
+  // printf("inputs_r=%llu ", inputs);
+  // printf("outputs_r=%llu]\n", outputs);
+  //
+  //
+  // int levels = gates / width;
+  // // initialize first level gate array
+  // Level * root = read_level(width, buffer);
+  // levels--;
+  //
+  // Level * level_pre = root;
+  // while (levels > 0) {
+  //   Level * level_current = read_level(width, level_pre->buffer);
+  //   level_pre->next = level_current;
+  //   level_pre = level_current;
+  //   levels--;
+  // }
+  //
+  // Level * p = root;
+  // int l = 0;
+  //
+  //
+  // Bit * in_arr = init_input(width);
+  // Bit * out_arr = (Bit * ) calloc(width, sizeof(Bit));
+  //
+  // while (p != 0) {
+  //
+  //   for (int i = 0; i < width; i++) {
+  //     //printf("loaded gate %02x\n", p->gates[i].type);
+  //
+  //     out_arr[i] = eval(in_arr, p->gates[i]);
+  //   }
+  //
+  //   memcpy(in_arr, out_arr, sizeof(out_arr));
+  //   p = p->next;
+  // }
+  //
+  // free(in_arr);
+  // free(out_arr);
 }

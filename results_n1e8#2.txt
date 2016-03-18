@@ -1,0 +1,125 @@
+Performance counter stats for './bin/bpw eval 3' (3 runs):
+
+      3072.391039      task-clock (msec)         #    0.998 CPUs utilized
+               77      context-switches          #    0.025 K/sec
+                1      cpu-migrations            #    0.000 K/sec
+          498,817      page-faults               #    0.162 M/sec
+   12,976,335,570      cycles                    #    4.217 GHz
+    5,786,467,321      stalled-cycles-frontend   #   44.52% frontend cycles idle
+  <not supported>      stalled-cycles-backend
+   13,250,713,461      instructions              #    1.02  insns per cycle
+                                                 #    0.44  stalled cycles per insn
+    2,338,332,435      branches                  #  759.880 M/sec
+      138,886,942      branch-misses             #    5.94% of all branches
+    5,184,094,397      L1-dcache-loads           # 1684.658 M/sec
+      115,769,878      L1-dcache-load-misses     #    2.23% of all L1-dcache hits
+       48,267,018      LLC-loads                 #   15.685 M/sec
+  <not supported>      LLC-load-misses
+
+      3.077819043 seconds time elapsed                                          ( +-  0.14% )
+
+
+Performance counter stats for './bin/bpw eval 4' (3 runs):
+
+      3086.496483      task-clock (msec)         #    0.995 CPUs utilized
+              291      context-switches          #    0.094 K/sec
+                1      cpu-migrations            #    0.000 K/sec
+          498,792      page-faults               #    0.161 M/sec
+   13,034,149,493      cycles                    #    4.204 GHz
+    5,842,565,204      stalled-cycles-frontend   #   45.02% frontend cycles idle
+  <not supported>      stalled-cycles-backend
+   13,238,471,603      instructions              #    1.02  insns per cycle
+                                                 #    0.44  stalled cycles per insn
+    2,334,797,817      branches                  #  752.997 M/sec
+      138,855,730      branch-misses             #    5.94% of all branches
+    5,181,808,762      L1-dcache-loads           # 1671.187 M/sec
+      116,648,792      L1-dcache-load-misses     #    2.25% of all L1-dcache hits
+       49,191,463      LLC-loads                 #   15.865 M/sec
+  <not supported>      LLC-load-misses
+
+      3.101716643 seconds time elapsed                                          ( +-  0.65% )
+
+
+ Performance counter stats for './bin/bpw eval 5' (3 runs):
+
+    3106.524995      task-clock (msec)         #    0.996 CPUs utilized
+             61      context-switches          #    0.020 K/sec
+              1      cpu-migrations            #    0.000 K/sec
+        498,846      page-faults               #    0.160 M/sec
+ 13,120,721,441      cycles                    #    4.207 GHz
+  5,926,549,358      stalled-cycles-frontend   #   45.36% frontend cycles idle
+<not supported>      stalled-cycles-backend
+ 13,244,658,133      instructions              #    1.01  insns per cycle
+                                               #    0.44  stalled cycles per insn
+  2,340,126,636      branches                  #  750.326 M/sec
+    138,880,006      branch-misses             #    5.94% of all branches
+  5,184,421,544      L1-dcache-loads           # 1662.305 M/sec
+    116,941,395      L1-dcache-load-misses     #    2.26% of all L1-dcache hits
+     49,724,719      LLC-loads                 #   15.943 M/sec
+<not supported>      LLC-load-misses
+
+    3.119382056 seconds time elapsed                                          ( +-  0.54% )
+
+
+Performance counter stats for './bin/bpw eval 6' (3 runs):
+
+    3096.493919      task-clock (msec)         #    0.992 CPUs utilized
+              4      context-switches          #    0.001 K/sec
+              0      cpu-migrations            #    0.000 K/sec
+        499,007      page-faults               #    0.160 M/sec
+ 13,078,999,217      cycles                    #    4.190 GHz
+  5,867,834,154      stalled-cycles-frontend   #   44.86% frontend cycles idle
+<not supported>      stalled-cycles-backend
+ 13,290,909,997      instructions              #    1.02  insns per cycle
+                                               #    0.44  stalled cycles per insn
+  2,351,449,910      branches                  #  753.352 M/sec
+    138,902,047      branch-misses             #    5.91% of all branches
+  5,200,256,884      L1-dcache-loads           # 1666.046 M/sec
+    116,920,929      L1-dcache-load-misses     #    2.25% of all L1-dcache hits
+     49,524,682      LLC-loads                 #   15.867 M/sec
+<not supported>      LLC-load-misses
+
+    3.121845623 seconds time elapsed                                          ( +-  0.53% )
+
+
+
+    Performance counter stats for './bin/bpw eval 7' (3 runs):
+
+    3178.847646      task-clock (msec)         #    0.994 CPUs utilized
+              6      context-switches          #    0.002 K/sec
+              1      cpu-migrations            #    0.000 K/sec
+        501,265      page-faults               #    0.157 M/sec
+ 13,426,826,685      cycles                    #    4.199 GHz
+  6,003,236,655      stalled-cycles-frontend   #   44.79% frontend cycles idle
+<not supported>      stalled-cycles-backend
+ 13,827,116,684      instructions              #    1.03  insns per cycle
+                                               #    0.43  stalled cycles per insn
+  2,493,299,061      branches                  #  779.697 M/sec
+    139,170,505      branch-misses             #    5.58% of all branches
+  5,388,309,250      L1-dcache-loads           # 1685.016 M/sec
+    116,608,688      L1-dcache-load-misses     #    2.16% of all L1-dcache hits
+     50,150,835      LLC-loads                 #   15.683 M/sec
+<not supported>      LLC-load-misses
+
+    3.198117690 seconds time elapsed                                          ( +-  0.58% )
+
+
+Performance counter stats for './bin/bpw eval 8' (3 runs):
+
+    3875.696533      task-clock (msec)         #    0.991 CPUs utilized
+              6      context-switches          #    0.002 K/sec
+              0      cpu-migrations            #    0.000 K/sec
+        523,216      page-faults               #    0.134 M/sec
+ 16,370,194,132      cycles                    #    4.185 GHz
+  6,715,639,524      stalled-cycles-frontend   #   41.03% frontend cycles idle
+<not supported>      stalled-cycles-backend
+ 19,287,806,295      instructions              #    1.18  insns per cycle
+                                               #    0.35  stalled cycles per insn
+  3,944,586,222      branches                  # 1008.399 M/sec
+    142,095,154      branch-misses             #    3.60% of all branches
+  7,296,251,483      L1-dcache-loads           # 1865.223 M/sec
+    118,256,064      L1-dcache-load-misses     #    1.62% of all L1-dcache hits
+     50,307,357      LLC-loads                 #   12.861 M/sec
+<not supported>      LLC-load-misses
+
+    3.912609242 seconds time elapsed                                          ( +-  0.49% )
